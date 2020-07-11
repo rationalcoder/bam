@@ -93,7 +93,7 @@ static char*    fmt_cstr(const char* fmt, ...);
 static string32 fmt(const char* fmt, ...);
 static string32 to_str(const char* s);
 //static string32 to_str(buffer32 b);
-static char*    to_cstr(string32 b);
+static char*    to_cstr(const string32 b);
 
 static string32 cat(string32 a, string32 b);
 static string32 cat(const char* a, string32 b);

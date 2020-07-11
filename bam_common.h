@@ -18,7 +18,7 @@ template <typename To_, typename From_> inline To_
 down_cast(From_ from)
 {
     To_ result = (To_)from;
-    assert(result == from);
+    //assert(result == from);
 
     return result;
 }
