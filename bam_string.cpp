@@ -286,7 +286,7 @@ u32      string::to_u32     (u32      def, bool* ok) const { return _to_unsigned
 u64      string::to_u64     (u64      def, bool* ok) const { return _to_unsigned<u64>     (this, UINT64_MAX, def, ok); }
 umm      string::to_usize   (umm      def, bool* ok) const { return _to_unsigned<umm>     (this, SIZE_MAX,   def, ok); }
 
-extern float
+float
 string::to_float(float def, bool* ok) const
 {
     errno = 0;
@@ -300,7 +300,7 @@ string::to_float(float def, bool* ok) const
     return val;
 }
 
-extern double
+double
 string::to_double(double def, bool* ok) const
 {
     errno = 0;
@@ -314,7 +314,7 @@ string::to_double(double def, bool* ok) const
     return val;
 }
 
-extern bool
+bool
 string::to_bool(bool def, bool* ok) const
 {
     if (size >= 4) {
@@ -355,7 +355,7 @@ vfmt(const char* fmt, va_list va)
 {
     string result(bam::uninitialized);
 
-    constexpr int kStringChunkSize = STB_SPRINTF_MIN;
+    static constexpr int kStringChunkSize = STB_SPRINTF_MIN;
 
     auto& tempArena = bam::temp_memory();
 

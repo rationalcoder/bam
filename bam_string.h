@@ -5,6 +5,11 @@ struct buffer
 {
     u8* data;
     umm size;
+
+    buffer() : data(), size() {}
+    buffer(void* data, umm size) : data((u8*)data), size(size) {}
+    buffer(u8* data, umm size) : data(data), size(size) {}
+    buffer(bam::ctor) {}
 };
 
 //template <typename T_, typename Size_ = u32>
@@ -51,7 +56,7 @@ struct string
 
     string() : data(), size() {}
     string(const char* s);
-    string(char* data, umm size) :data(data), size(size) {}
+    string(char* data, umm size) : data(data), size(size) {}
     string(bam::ctor) {}
 
     // TODO: Rest of string API
@@ -144,8 +149,8 @@ struct string_builder
 {
     bam::allocator     _alloc;
 
-    u32                _nChunks;
-    u32                _tailFilled;
+    umm                _nChunks;
+    umm                _tailFilled;
     bam::string_chunk* _tail;
     bam::string_chunk  _head;
 

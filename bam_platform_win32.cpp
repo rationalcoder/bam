@@ -1,4 +1,4 @@
-#include <windows>
+#include <windows.h>
 
 namespace bam
 {
@@ -20,8 +20,8 @@ failed_expand_arena(bam::memory_arena* arena, u8* alignedAt, u8* nextAt, umm ali
     umm padding       = (u8*)bam::align_up(at, (s32)alignment) - at;
     umm unalignedSize = nextAt - at - padding;
 
-    BAM_LOG_ERROR("Failed to expand arena '%s': last allocation (size: %u, align: %u)\n",
-        arena->tag, unalignedSize, alignment);
+    BAM_LOG_ERROR("Failed to expand arena '%s': last allocation (size: %llu, align: %llu)\n",
+        arena->tag, (u64)unalignedSize, (u64)alignment);
 
     bam_assert(!"Arena expansion failure");
     return nullptr;
@@ -39,8 +39,7 @@ expand_arena(bam::memory_arena* arena, u8* alignedAt, u8* nextAt, umm alignment)
         if (chunksNeeded * arena->chunkSize < spaceNeeded)
             chunksNeeded++;
 
-        PDWORD oldProtect = 0;
-        if (!VirtualProtect(arena->firstChunk.end, spaceNeeded, PAGE_READWRITE, &oldProtect))
+        if (!VirtualAlloc(arena->firstChunk.end, spaceNeeded, MEM_COMMIT, PAGE_READWRITE))
             return bam::failed_expand_arena(arena, alignedAt, nextAt, alignment);
 
         arena->firstChunk.at   = nextAt;
@@ -152,6 +151,14 @@ allocate_arena(const char* tag, umm chunkSize, umm maxSize)
 {
     bam::memory_arena result = {};
 
+    if (chunkSize > maxSize) {
+        BAM_LOG_ERROR("Chunk size has to be <= Max size (Chunk size: %llu, Max size: %llu)",
+            (u64)chunkSize, (u64)maxSize);
+
+        bam_assert(false);
+        return result;
+    }
+
     // Non-default max size implies a fixed size arena.
     //
     // NOTE(bmartin): Right now, only fixed-size arenas get a guard page. The assumption is that
@@ -173,15 +180,16 @@ allocate_arena(const char* tag, umm chunkSize, umm maxSize)
 
         if (start == NULL) {
             // TODO: logging
-            BAM_LOG_ERROR("Failed to allocate arena '%s' (Max Size: %llu): %s\n", 
-                    tag, (u64)maxSize, strerror(errno));
+            BAM_LOG_ERROR("Failed to allocate arena '%s' (Max Size: %llu): %d\n", 
+                    tag, (u64)maxSize, GetLastError());
             bam_assert(!"Arena allocation failure");
 
             return result;
         }
 
-        PDWORD oldProtect = 0;
-        if (!VirtualProtect(start, alignedInitialSize, PAGE_READWRITE, &oldProtect)) {
+        if (!VirtualAlloc(start, alignedInitialSize, MEM_COMMIT, PAGE_READWRITE)) {
+            BAM_LOG_ERROR("Failed to allocate arena '%s' (Max Size: %llu, Initial: %llu): %d\n", 
+                    tag, (u64)maxSize, (u64)alignedInitialSize, GetLastError());
             bam_assert(!"Arena allocation failure");
 
             return result;
@@ -207,7 +215,7 @@ allocate_arena(const char* tag, umm chunkSize, umm maxSize)
         u8* start = (u8*)VirtualAlloc(nullptr, alignedInitialSize, MEM_COMMIT, PAGE_READWRITE);
         if (start == NULL) {
             // TODO: logging
-            bam_log_error("Failed to allocate arena '%s' (Max Size: %llu): %s\n", 
+            BAM_LOG_ERROR("Failed to allocate arena '%s' (Max Size: %llu): %s\n", 
                     tag, (u64)maxSize, strerror(errno));
             bam_assert(!"Arena allocation failure");
         }

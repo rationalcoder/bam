@@ -112,13 +112,13 @@ string_builder::~string_builder()
 inline void
 string_builder::append(const char* s)
 {
-    u32 size = (u32)strlen(s);
-    u32 progress = 0;
+    umm size = (u32)strlen(s);
+    umm progress = 0;
 
     for (;;) {
-        const u32 space = bam::string_chunk_size - _tailFilled;
-        const u32 dataRemaining = size - progress;
-        const u32 maxFromThisChunk = space < dataRemaining ? space : dataRemaining;
+        const umm space = bam::string_chunk_size - _tailFilled;
+        const umm dataRemaining = size - progress;
+        const umm maxFromThisChunk = space < dataRemaining ? space : dataRemaining;
         BAM_MEMCPY(_tail->data + _tailFilled, s + progress, maxFromThisChunk);
 
         progress += maxFromThisChunk;
@@ -141,12 +141,12 @@ string_builder::append(const char* s)
 inline void
 string_builder::append(const bam::string& s)
 {
-    u32 progress = 0;
+    umm progress = 0;
 
     for (;;) {
-        const u32 space = bam::string_chunk_size - _tailFilled;
-        const u32 dataRemaining = s.size - progress;
-        const u32 maxFromThisChunk = space < dataRemaining ? space : dataRemaining;
+        const umm space = bam::string_chunk_size - _tailFilled;
+        const umm dataRemaining = s.size - progress;
+        const umm maxFromThisChunk = space < dataRemaining ? space : dataRemaining;
         BAM_MEMCPY(_tail->data + _tailFilled, s.data + progress, maxFromThisChunk);
 
         progress += maxFromThisChunk;

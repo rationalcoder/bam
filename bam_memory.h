@@ -92,13 +92,13 @@ alignment_offset(T_* header, bam::memory_arena& arena)
     return (u8)((u8*)arena.tailChunk->at - (u8*)(header + 1));
 }
 
-inline b32   is_aligned(void* address, s32 alignPow2) { return ((uptr)address & (alignPow2-1)) == 0; }
-inline void* align_up  (void* address, s32 alignPow2) { return (void*)(((uptr)address + alignPow2-1) & -alignPow2); }
-inline void* align_down(void* address, s32 alignPow2) { return (void*)((uptr)address & ~(alignPow2-1)); }
+inline b32   is_aligned(void* address, umm alignPow2) { return ((uptr)address & ((s32)alignPow2-1)) == 0; }
+inline void* align_up  (void* address, umm alignPow2) { return (void*)(((uptr)address + (s32)alignPow2-1) & -(s32)alignPow2); }
+inline void* align_down(void* address, umm alignPow2) { return (void*)((uptr)address & ~((s32)alignPow2-1)); }
 
-inline b32  is_aligned(uptr address, s32 alignPow2) { return bam::is_aligned((void*)address, alignPow2); }
-inline uptr align_up  (uptr address, s32 alignPow2) { return (uptr)bam::align_up  ((void*)address, alignPow2); }
-inline uptr align_down(uptr address, s32 alignPow2) { return (uptr)bam::align_down((void*)address, alignPow2); }
+inline b32  is_aligned(uptr address, umm alignPow2) { return bam::is_aligned((void*)address, alignPow2); }
+inline uptr align_up  (uptr address, umm alignPow2) { return (uptr)bam::align_up  ((void*)address, alignPow2); }
+inline uptr align_down(uptr address, umm alignPow2) { return (uptr)bam::align_down((void*)address, alignPow2); }
 
 inline void*
 aligned_offset(void* address, umm offset, s32 alignPow2)
@@ -233,16 +233,18 @@ sub_allocate(bam::memory_arena& arena, umm size, umm alignment, const char* tag,
 {
     void* start = bam::push(arena, size, alignment);
 
-    bam::memory_arena result;
-    result.tag              = tag;
-    result.user             = nullptr; // TODO: pass this in?
-    result.expand           = expand;
-    result.chunkSize        = size;
-    result.maxSize          = size;
-    result.firstChunk.next  = nullptr;
+    bam::memory_arena result = {};
+    result.tailChunk = &result.firstChunk;
+	result.firstChunk.next = nullptr;
     result.firstChunk.start = (u8*)start;
-    result.firstChunk.at    = (u8*)start;
-    result.firstChunk.end   = (u8*)start + size;
+    result.firstChunk.at = (u8*)start;
+    result.firstChunk.end = (u8*)start + size;
+    result.expand = expand;
+    result.user = nullptr; // TODO: pass this in?
+    result.tag = tag;
+    result.type = bam::arena_type_fixed;
+    result.chunkSize = size;
+    result.maxSize = size;
 
     return result;
 }

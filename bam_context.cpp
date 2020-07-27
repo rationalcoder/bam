@@ -18,4 +18,10 @@ init_context(bam::context& ctx)
     ctx.allocator        = &ctx.defaultAllocator;
 }
 
+void
+init_context()
+{
+    bam::init_context(bam::get_context());
+}
+
 } // namespace bam

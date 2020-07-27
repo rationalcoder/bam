@@ -12,9 +12,10 @@ struct context
 
 #if BAM_DEFAULT_GET_CONTEXT
 extern thread_local bam::context g_ctx;
-bam::context& get_context() { return g_ctx; }
+
+inline bam::context& get_context() { return g_ctx; }
 #else
-bam::context& get_context() { return BAM_GET_CONTEXT(); }
+inline bam::context& get_context() { return BAM_GET_CONTEXT(); }
 #endif
 
 BAM_FORCE_INLINE bam::memory_arena&
@@ -23,7 +24,11 @@ perm_memory() { return bam::get_context().perm; }
 BAM_FORCE_INLINE bam::memory_arena&
 temp_memory() { return bam::get_context().temp; }
 
+BAM_FORCE_INLINE bam::memory_arena&
+frame_memory() { return bam::get_context().frame; }
+
 void init_context(bam::context& ctx);
+void init_context();
 
 inline bam::allocator*
 set_allocator(bam::allocator* alloc)

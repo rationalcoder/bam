@@ -1,7 +1,7 @@
 // Only supports Linux and Windows
 
-#ifdef __WIN32
-    #define BAM_FORCED_INLINE __forceinline
+#ifdef _WIN32
+    #define BAM_FORCE_INLINE __forceinline
 
     #include <malloc.h>
     #define BAM_ALIGNED_ALLOC(_size, _align) _aligned_malloc(_size, _align)

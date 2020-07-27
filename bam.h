@@ -27,7 +27,11 @@
 #include "bam_string.cpp"
 #include "bam_context.cpp"
 #include "bam_platform.cpp"
+
+#if BAM_NEED_STB_SPRINTF
 #define STB_SPRINTF_IMPLEMENTATION
 #include BAM_STB_SPRINTF_INCLUDE
+#endif
+
 #endif
 

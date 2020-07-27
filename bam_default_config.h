@@ -77,3 +77,7 @@
     #define BAM_LOG_ERROR(...) fprintf(stderr, __VA_ARGS__);
 #endif
 
+#ifndef BAM_HAVE_STB_SPRINTF
+    #define BAM_NEED_STB_SPRINTF_IMPL 1
+#endif
+
