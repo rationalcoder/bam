@@ -1,3 +1,5 @@
+#include <type_traits>
+
 namespace bam
 {
 
@@ -46,6 +48,26 @@ inline void right_rotate_value(u8&  value, u8  min, u8  max, u8  step = 1) { val
 inline void right_rotate_value(u16& value, u16 min, u16 max, u16 step = 1) { value = value == max ? min : value + step; }
 inline void right_rotate_value(u32& value, u32 min, u32 max, u32 step = 1) { value = value == max ? min : value + step; }
 inline void right_rotate_value(u64& value, u64 min, u64 max, u64 step = 1) { value = value == max ? min : value + step; }
+
+
+// move and forward. To get them from std, you have to include <utility>, and that thing is huge...
+
+template <typename T_> constexpr typename std::remove_reference<T_>::type&&
+move(T_&& t) noexcept { return static_cast<typename std::remove_reference<T_>::type&&>(t); }
+
+template <typename T_> constexpr T_&&
+forward(typename std::remove_reference<T_>::type& t) noexcept { return static_cast<T_&&>(t); }
+
+template <typename T_> constexpr T_&&
+forward(typename std::remove_reference<T_>::type&& t) noexcept { return static_cast<T_&&>(t); }
+
+template <typename T_> BAM_FORCE_INLINE void
+swap(T_& a, T_& b)
+{
+    T_ temp = bam::move(a);
+    a = bam::move(b);
+    b = bam::move(temp);
+}
 
 }
 

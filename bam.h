@@ -15,8 +15,10 @@
 #include "bam_memory.h"
 #include "bam_context.h"
 #include "bam_string.h"
+#include "bam_ds.h"
 
 #include "bam_string.inl"
+#include "bam_ds.inl"
 
 
 #endif // guard
@@ -28,7 +30,7 @@
 #include "bam_context.cpp"
 #include "bam_platform.cpp"
 
-#if BAM_NEED_STB_SPRINTF
+#if BAM_NEED_STB_SPRINTF_IMPL
 #define STB_SPRINTF_IMPLEMENTATION
 #include BAM_STB_SPRINTF_INCLUDE
 #endif
