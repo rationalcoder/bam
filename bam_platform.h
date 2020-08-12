@@ -38,5 +38,9 @@ void free_arena(bam::memory_arena& arena);
 
 u8* expand_arena(bam::memory_arena* arena, u8* at, u8* nextAt, umm alignment);
 
-}
+// All capacity args are in units of the element size.
+// targetCapacity of 0 means expand by one page.
+void* expand_big_array(void* data, umm* currentCapacityInBytes, umm targetCapacityInBytes);
+void free_big_array(void*, umm capacityInBytes);
 
+}

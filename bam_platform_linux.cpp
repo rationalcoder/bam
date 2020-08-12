@@ -238,4 +238,38 @@ free_arena(bam::memory_arena& arena)
     }
 }
 
+//{ Big Arrays
+
+extern void*
+expand_big_array(void* data, umm* currentCapacityInBytes, umm targetCapacityInBytes)
+{
+    umm finalCapacityInBytes = bam::align_up(targetCapacityInBytes, 4096);
+
+    if (!data) {
+        void* start = ::mmap(nullptr, finalCapacityInBytes,
+            PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+
+        if (start == MAP_FAILED)
+            return nullptr;
+
+        *currentCapacityInBytes = finalCapacityInBytes;
+        return start;
+    }
+
+    void* start = ::mremap(data, *currentCapacityInBytes, finalCapacityInBytes, MREMAP_MAYMOVE);
+    if (start == MAP_FAILED)
+        return nullptr;
+
+    *currentCapacityInBytes = finalCapacityInBytes;
+    return start;
+}
+
+extern void
+free_big_array(void* data, umm capacityInBytes)
+{
+    ::munmap(data, capacityInBytes);
+}
+
+//}
+
 } // namespace bam

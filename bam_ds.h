@@ -118,4 +118,48 @@ struct blist
     const_iterator cend()   const { return end(); }
 };
 
+// @Incomplete
+template <typename T_>
+struct big_array
+{
+    T_* _data;
+    umm _size;
+    umm _capacity;
+    umm _capacityInBytes;
+
+    big_array() : _data(), _size(), _capacity(), _capacityInBytes() {}
+    big_array(const big_array<T_>& rhs) = delete;
+    ~big_array();
+
+    const T_& operator [] (umm idx) const { bam_assert(idx<_size); return _data[idx]; }
+    T_&       operator [] (umm idx)       { bam_assert(idx<_size); return _data[idx]; }
+
+    bool reserve(umm n);
+    void clear();
+
+    const T_* data() const { return _data; }
+    T_*       data()       { return _data; }
+
+    const T_& front() const { return *_data; }
+    T_&       front()       { return *_data; }
+
+    T_* add_forget();
+    T_* add_default();
+    T_* add(T_& val);
+    T_* add(T_&& val);
+
+    umm size() const { return _size; }
+
+    const T_* begin() const { return _data; }
+    T_*       begin()       { return _data; }
+
+    const T_* end() const { return _data + _size; }
+    T_*       end()       { return _data + _size; }
+
+    const T_* cbegin() const { return begin(); }
+    const T_* cend()   const { return end(); }
+
+    BAM_FORCE_INLINE T_* _expand_if_necessary();
+};
+
 } // namespace bam
