@@ -98,6 +98,8 @@ struct string
     //}
 };
 
+inline bam::string copy_string(const char* text, umm size);
+inline bam::string temp_string(const char* text, umm size);
 
 //b32 operator == (const buffer& lhs, const buffer& rhs);
 //b32 operator == (const buffer& buffer, char c);
@@ -106,8 +108,8 @@ struct string
 //b32 operator != (const buffer& buffer, char c);
 //b32 operator != (const buffer& buffer, const char* str);
 
-string fmt(const char* fmt, ...) BAM_CHECK_FMT(1, 2);
-string vfmt(const char* fmt, va_list va);
+bam::string fmt(const char* fmt, ...) BAM_CHECK_FMT(1, 2);
+bam::string vfmt(const char* fmt, va_list va);
 
 ///static string cat(string a, string b);
 ///static string cat(const char* a, string b);

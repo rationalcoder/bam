@@ -375,16 +375,16 @@ inline bam::memory_arena
 allocator_data_from(void* data, umm size)
 {
     bam::memory_arena result = {};
-    result.tag              = "Fixed Buffer";
-    result.user             = nullptr;
-    result.expand           = &bam::failed_expand_arena;
-    result.chunkSize        = size;
-    result.maxSize          = size;
-    result.firstChunk.next  = nullptr;
-    result.firstChunk.start = (u8*)data;
-    result.firstChunk.at    = (u8*)data;
-    result.firstChunk.end   = (u8*)data + size;
-    result.tailChunk        = &result.firstChunk;
+    result.tag               = "Fixed Buffer";
+    result.user              = nullptr;
+    result.expand            = &bam::failed_expand_arena;
+    result.chunkSize         = size;
+    result.maxSize           = size;
+    result.firstChunk.next   = nullptr;
+    result.firstChunk.start  = (u8*)data;
+    result.firstChunk.at     = (u8*)data;
+    result.firstChunk.end    = (u8*)data + size;
+    result.tailChunk         = &result.firstChunk;
 
     return result;
 }

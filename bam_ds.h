@@ -4,7 +4,7 @@ namespace bam
 template <typename T_, u32 Size_>
 struct bucket
 {
-    char data[Size_ * sizeof(T_)] __attribute__((aligned (alignof(T_))));
+    char data[Size_ * sizeof(T_)] alignas(T_);
     bucket* next;
 
     bucket() = default;
