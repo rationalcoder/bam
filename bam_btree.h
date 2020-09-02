@@ -28,12 +28,15 @@
  */
 struct btree_head
 {
-	size_t *node;
-	int height;
+	size_t         *node;
+    bam::allocator alloc;
+	int            height;
 };
 
-/* btree geometry */
+/* btree node geometry */
 struct btree_geo;
+extern struct btree_geo btree_geo32;
+//extern struct btree_geo btree_geo64;
 
 /**
  * btree_init - initialise a btree
@@ -45,7 +48,8 @@ struct btree_geo;
  * (-%ENOMEM) when memory allocation fails.
  *
  */
-int btree_init(struct btree_head *head);
+void btree_init(struct btree_head *head);
+void btree_init(struct btree_head *head, bam::allocator alloc);
 
 /**
  * btree_destroy - destroy mempool
@@ -78,10 +82,8 @@ void *btree_lookup(
  * @geo: the btree geometry
  * @key: the key to add (must not already be present)
  * @val: the value to add (must not be %NULL)
- * @gfp: allocation flags for node allocations
  *
- * This function returns 0 if the item could be added, or an
- * error code if it failed (may fail due to memory pressure).
+ * This function returns 0 if the item could be added.
  */
 int btree_insert(
     struct btree_head *head,
@@ -97,8 +99,8 @@ int btree_insert(
  * @key: the key to update
  * @val: the value to change it to (must not be %NULL)
  *
- * This function returns 0 if the update was successful, or
- * -%ENOENT if the key could not be found.
+ * This function returns 0 if the update was successful,
+ * or a negative number if the key could not be found.
  */
 int btree_update(
     struct btree_head *head,
@@ -127,7 +129,6 @@ void *btree_remove(
  * @target: the tree that gets all the entries
  * @victim: the tree that gets merged into @target
  * @geo: the btree geometry
- * @gfp: allocation flags
  *
  * The two trees @target and @victim may not contain the same keys,
  * that is a bug and triggers a BUG(). This function returns zero
@@ -140,6 +141,12 @@ int btree_merge(
     struct btree_head *target,
     struct btree_head *victim,
     struct btree_geo  *geo);
+
+void *btree_first(
+    struct btree_head *head,
+    struct btree_geo  *geo,
+	size_t            *key,
+    size_t            **node);
 
 /**
  * btree_last - get last entry in btree
@@ -173,21 +180,18 @@ void *btree_get_prev(
     struct btree_geo  *geo,
     size_t            *key);
 
-typedef void (btree_visitor_fn)(void *elem, size_t opaque, size_t *key, size_t index, void *func2);
+typedef void (btree_visitor_fn)(void *elem, size_t opaque, size_t *key, size_t index);
 
-/* internal use, use btree_visitor{l,32,64,128} */
-size_t btree_visitor(
+size_t btree_visit(
     struct btree_head *head,
     struct btree_geo  *geo,
     size_t            opaque,
-	btree_visitor_fn  *func,
-    void              *func2);
+	btree_visitor_fn  *func);
 
-/* internal use, use btree_grim_visitor{l,32,64,128} */
-size_t btree_grim_visitor(
+// Visit all nodes, and free each node after all key/valu pairs have been visited.
+size_t btree_grim_visit(
     struct btree_head *head,
     struct btree_geo  *geo,
 	size_t            opaque,
-	btree_visitor_fn  *func,
-	void              *func2);
+	btree_visitor_fn  *func);
 
