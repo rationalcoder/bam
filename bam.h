@@ -16,6 +16,7 @@
 #include "bam_context.h"
 #include "bam_string.h"
 #include "bam_ds.h"
+#include "bam_btree.h"
 
 #include "bam_string.inl"
 #include "bam_ds.inl"
@@ -29,6 +30,7 @@
 #include "bam_string.cpp"
 #include "bam_context.cpp"
 #include "bam_platform.cpp"
+#include "bam_btree.cpp"
 
 #if BAM_NEED_STB_SPRINTF_IMPL
 #define STB_SPRINTF_IMPLEMENTATION
