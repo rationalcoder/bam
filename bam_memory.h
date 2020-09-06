@@ -333,11 +333,12 @@ struct allocator
     bam::allocate_func*  _alloc;
     flag32               _flags;
 
-    // TODO: This leaves thing uninitialized b/c there is one in the context struct, and we don't
+    // TODO: This leaves things uninitialized b/c there is one in the context struct, and we don't
     // want that thing to have a ctor. That member needs to be pulled out b/c this is error prone.
     allocator() {}
-    allocator(bam::memory_arena* arena) { _udata = arena; _alloc = &bam::arena_allocate; }
-    allocator(bam::memory_arena& arena) { _udata = &arena; _alloc = &bam::arena_allocate; }
+    allocator(const bam::allocator& alloc) { *this = alloc; }
+    allocator(bam::memory_arena* arena) { _udata = arena; _alloc = &bam::arena_allocate; _flags = 0; }
+    allocator(bam::memory_arena& arena) { _udata = &arena; _alloc = &bam::arena_allocate; _flags = 0; }
 
     bool has_free() const { return _flags & bam::allocator_has_free; }
 
@@ -348,26 +349,21 @@ struct allocator
     void reset()       { _alloc(bam::allocator_op_reset, _udata, nullptr, 0, 0); }
 };
 
-inline bam::memory_arena*
+BAM_FORCE_INLINE bam::allocator
+allocator_data_from(const bam::allocator& alloc)
+{
+    return alloc;
+}
+
+BAM_FORCE_INLINE bam::memory_arena*
 allocator_data_from(bam::memory_arena& arena)
 {
     return &arena;
 }
-inline bam::allocator
-allocator_from(bam::memory_arena& arena)
+BAM_FORCE_INLINE bam::allocator
+allocator_from(const bam::allocator& alloc)
 {
-    bam::allocator result = {};
-
-    result._udata = &arena;
-    result._alloc = &bam::arena_allocate;
-    result._flags = 0;
-
-    return result;
-}
-inline bam::allocator
-allocator_from(bam::memory_arena* arena)
-{
-    return bam::allocator_from(*arena);
+    return alloc;
 }
 
 // @Speed: We can do better for fixed buffer allocations than converting to an arena.
@@ -431,13 +427,20 @@ struct allocator_scope
 };
 
 #define bam_allocator_scope_impl2(counter, ...)\
-_Pragma("GCC diagnostic push")\
-_Pragma("GCC diagnostic ignored \"-Wuninitialized\"")\
 auto _allocatorScopeData##counter = bam::allocator_data_from(__VA_ARGS__);\
-auto _allocatorScope##counter = bam::allocator_scope(bam::allocator_from(_allocatorScopeData##counter));\
-_Pragma("GCC diagnostic pop")
+auto _allocatorScope##counter = bam::allocator_scope(bam::allocator_from(_allocatorScopeData##counter));
 #define bam_allocator_scope_impl1(counter, ...) bam_allocator_scope_impl2(counter, __VA_ARGS__)
 #define bam_allocator_scope(...) bam_allocator_scope_impl1(__COUNTER__, __VA_ARGS__)
+
+// I had these pragmas here before, but I'm not sure why. If we need them, they will need to be ported to msvc.
+//#define bam_allocator_scope_impl2(counter, ...)\
+//_Pragma("GCC diagnostic push")\
+//_Pragma("GCC diagnostic ignored \"-Wuninitialized\"")\
+//auto _allocatorScopeData##counter = bam::allocator_data_from(__VA_ARGS__);\
+//auto _allocatorScope##counter = bam::allocator_scope(bam::allocator_from(_allocatorScopeData##counter));\
+//_Pragma("GCC diagnostic pop")
+//#define bam_allocator_scope_impl1(counter, ...) bam_allocator_scope_impl2(counter, __VA_ARGS__)
+//#define bam_allocator_scope(...) bam_allocator_scope_impl1(__COUNTER__, __VA_ARGS__)
 
 
 //{ Free list

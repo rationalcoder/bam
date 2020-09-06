@@ -75,9 +75,9 @@ struct btree_geo btree_geo32 = {
 static size_t *btree_internal_node_alloc(struct btree_head *head)
 {
     size_t* result;
-    int i;
+    size_t i;
     result = (size_t*)head->alloc.allocate(BTREE_INTERNAL_NODE_SIZE, alignof(size_t));
-    for (i = 0; i < BTREE_INTERNAL_NODE_SIZE / sizeof(size_t); i++)
+    for (i = 0; i < (int)BTREE_INTERNAL_NODE_SIZE / sizeof(size_t); i++)
         result[i] = 0;
 
     return result;
@@ -86,7 +86,7 @@ static size_t *btree_internal_node_alloc(struct btree_head *head)
 static size_t *btree_leaf_node_alloc(struct btree_head *head)
 {
     size_t* result;
-    int i;
+    size_t i;
     result = (size_t*)head->alloc.allocate(BTREE_LEAF_NODE_SIZE, alignof(size_t));
     for (i = 0; i < BTREE_LEAF_NODE_SIZE / sizeof(size_t); i++)
         result[i] = 0;
@@ -691,8 +691,6 @@ btree_for_each(struct btree_head *head, struct btree_geo *geo,
 
     return count;
 }
-
-static void empty(void *, size_t, size_t *, size_t) {}
 
 extern size_t
 btree_visit(struct btree_head *head, struct btree_geo *geo,
