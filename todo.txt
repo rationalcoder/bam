@@ -1,0 +1,46 @@
+full btree support
+array allocator support
+    * Might be able to get away with just a few pow2 free lists for bucket array tables and string builder chunks.
+    * Don't really need generic arrays of arbitrary types. This greatly simplifies allocator implementations.
+    * __builtin_ffs for pow2 to index.
+
+Allocator notes:
+
+Ability to ask for a shared custom free list:
+
+internal_node_alloc = alloc.get_cache(BTREE_INTERNAL_NODE_SIZE);
+leaf_node_alloc     = alloc.get_cache(BTREE_LEAF_NODE_SIZE);
+
+Ability to query capabilities, like alloc.has_free().
+
+// No point in looping over hundreds of nodes and calling an empty free implementation.
+if (!alloc.has_free())
+    return;
+
+Node* next = nullptr;
+for (auto* node = first_node; node; node = next) {
+    next = node->next;
+    alloc.free(node);
+}
+
+You want to be able to query whether you allocator supports free, so you can early-out in destructors.
+Don't support generic aynamic arrays. They are just too hard and annoying to deal with.
+
+-- The Hidden Cost of Dynamic Arrays.
+Dynamic arrays are actually their own class of allocation that need to be handled separately.
+
+If you insist on implementing them, you should use an allocator that has low level access
+to your arena implementation, so that arrays (allocations that get realloc'd) that get big enough can be migrated to
+separate arenas to be handled specially by whatever OS facilities are available, e.g. mremap(..., MREMAP_MAYMOVE)
+
+RFC: Efficient Generic Allocator APIs.
+With languages like Jai coming out with standard support for hierarchical (polymorphic) allocators, it's important that we make sure
+that the common allocator type is generic _and_ specific enough to allow for simple, efficient allocator implementations
+that library code can take advantage of without much work. Jai for example, is taking a step forward in the simplification
+of allocation by standardizing the concept of temp memory. However, temp memory alone doesn't get us quite where we want to be.
+
+You have more responsibility for efficient memory usage as a library implementor.
+Any library implementation that uses generic dynamic arrays should be considered a bad citizen.
+
+Where does allocator complexity come from?
+
