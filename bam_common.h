@@ -44,10 +44,10 @@ map_bilateral(s32 val, u32 range)
 }
 
 // NOTE(bmartin): manual overloading to handle ambiguity with type deduction when literals are passed.
-inline void right_rotate_value(u8&  value, u8  min, u8  max, u8  step = 1) { value = value == max ? min : value + step; }
-inline void right_rotate_value(u16& value, u16 min, u16 max, u16 step = 1) { value = value == max ? min : value + step; }
-inline void right_rotate_value(u32& value, u32 min, u32 max, u32 step = 1) { value = value == max ? min : value + step; }
-inline void right_rotate_value(u64& value, u64 min, u64 max, u64 step = 1) { value = value == max ? min : value + step; }
+inline u8  right_rotate_value(u8&  value, u8  min, u8  max, u8  step = 1) { return value == max ? min : value + step; }
+inline u16 right_rotate_value(u16& value, u16 min, u16 max, u16 step = 1) { return value == max ? min : value + step; }
+inline u32 right_rotate_value(u32& value, u32 min, u32 max, u32 step = 1) { return value == max ? min : value + step; }
+inline u64 right_rotate_value(u64& value, u64 min, u64 max, u64 step = 1) { return value == max ? min : value + step; }
 
 
 // move and forward. To get them from std, you have to include <utility>, and that thing is huge...
