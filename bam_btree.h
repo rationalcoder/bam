@@ -36,7 +36,7 @@ struct btree_head
 /* btree node geometry */
 struct btree_geo;
 extern struct btree_geo btree_geo32;
-//extern struct btree_geo btree_geo64;
+extern struct btree_geo btree_geo64;
 
 /**
  * btree_init - initialise a btree
@@ -188,7 +188,7 @@ size_t btree_visit(
     size_t            opaque,
 	btree_visitor_fn  *func);
 
-// Visit all nodes, and free each node after all key/valu pairs have been visited.
+// Visit all nodes, and free each node after all key/value pairs have been visited.
 size_t btree_grim_visit(
     struct btree_head *head,
     struct btree_geo  *geo,

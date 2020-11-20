@@ -58,11 +58,11 @@ struct btree_geo btree_geo32 = {
 };
 //
 #define BTREE_WORDS_PER_U64 (8 / sizeof(size_t))
-//struct btree_geo btree_geo64 = {
-//    BTREE_WORDS_PER_U64,
-//    BTREE_INTERNAL_NODE_SIZE / sizeof(size_t) / (1 + BTREE_WORDS_PER_U64),
-//    BTREE_WORDS_PER_U64 * (BTREE_INTERNAL_NODE_SIZE / sizeof(size_t) / (1 + BTREE_WORDS_PER_U64)),
-//};
+struct btree_geo btree_geo64 = {
+    BTREE_WORDS_PER_U64,
+    BTREE_INTERNAL_NODE_SIZE / sizeof(size_t) / (1 + BTREE_WORDS_PER_U64),
+    BTREE_WORDS_PER_U64 * (BTREE_INTERNAL_NODE_SIZE / sizeof(size_t) / (1 + BTREE_WORDS_PER_U64)),
+};
 //
 //struct btree_geo btree_geo128 = {
 //    BTREE_WORDS_PER_U64,
